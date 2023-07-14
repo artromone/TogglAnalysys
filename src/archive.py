@@ -3,6 +3,10 @@ import datetime
 import utils
 
 
+def adjust_count(start_date, end_date):
+    return (end_date - start_date).days // 7
+
+
 def write_assists_gsheet(toggl, workspace_id, sheet_id):
     start_date = datetime.date(2023, 12, 27)
     yesterday_date = start_date + datetime.timedelta(days=20)

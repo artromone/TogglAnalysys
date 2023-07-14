@@ -38,7 +38,3 @@ def read_service_account():
 
 def get_assist_list(sheet):
     return sheet.col_values(1)[4:]
-
-
-def adjust_count(start_date, end_date):
-    return (end_date - start_date).days // 7
