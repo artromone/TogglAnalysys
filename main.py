@@ -73,6 +73,8 @@ def print_detailed_report(workspace_id, sheet_id):
 
     assist_list = sheet.col_values(1)[4:]
 
+    retry_rate = 5
+
     while start_date <= current_date:
         end_date = start_date + datetime.timedelta(days=6)
         data = {
@@ -91,9 +93,9 @@ def print_detailed_report(workspace_id, sheet_id):
                 cell_date = sheet.cell(3, count + 5).value
                 break
             except Exception as e:
-                print("An error occurred while retrieving the cell_date:", e)
-                print("Retrying after 15 seconds...")
-                time.sleep(15)
+                # print("An error occurred while retrieving the cell_date:", e)
+                # print("Retrying after " + str(retry_rate) + " seconds...")
+                time.sleep(retry_rate)
 
         # time.sleep(5)
 
@@ -123,14 +125,15 @@ def print_detailed_report(workspace_id, sheet_id):
                             else:
                                 current_value = hour_duration
 
+                            current_value = int(current_value * 1000) / 1000
                             cell.value = str(current_value)
                             sheet.update_cell(cell_row, cell_column, str(current_value))
 
                             break
                         except gspread.exceptions.APIError as e:
                             if e.response.status_code == 429:
-                                print("Rate limit exceeded. Retrying after 15 seconds...")
-                                time.sleep(15)
+                                # print("Retrying after " + str(retry_rate) + " seconds...")
+                                time.sleep(retry_rate)
                             else:
                                 print("An error occurred while updating the cell:", e)
                                 break
