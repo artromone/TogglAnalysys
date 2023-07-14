@@ -1,30 +1,8 @@
 import time
 import gspread
+import credentials
 from toggl.TogglPy import Toggl
 import datetime
-
-
-def read_credentials():
-    api_key = ""
-    workspace_id = ""
-    project_name = ""
-    sheet_id = ""
-    sheet_api_key = ""
-
-    with open("data/credentials.txt", "r") as file:
-        for line in file:
-            if line.startswith("api_key"):
-                api_key = line.split('"')[1]
-            elif line.startswith("workspace_id"):
-                workspace_id = line.split('"')[1]
-            elif line.startswith("project_name"):
-                project_name = line.split('"')[1]
-            elif line.startswith("sheet_id"):
-                sheet_id = line.split('"')[1]
-            elif line.startswith("sheet_api_key"):
-                sheet_api_key = line.split('"')[1]
-
-    return api_key, workspace_id, project_name, sheet_id, sheet_api_key
 
 
 def get_project_info(api_key, workspace_id, project_name, toggl):
@@ -181,16 +159,9 @@ def get_previous_week_dates():
 
 
 def main():
-    api_key, workspace_id, project_name, sheet_id, sheet_api_key = read_credentials()
+    api_key, workspace_id, project_name, sheet_id = credentials.read_credentials()
     toggl = Toggl()
     toggl.setAPIKey(api_key)
-    # get_project_info(api_key, workspace_id, project_name, toggl)
-
-    start_date, end_date = get_previous_week_dates()
-
-    print_detailed_report(workspace_id, sheet_id)
-
-    # write_assists_gsheet(toggl, workspace_id, sheet_id)
 
 
 if __name__ == "__main__":
