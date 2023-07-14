@@ -1,3 +1,5 @@
+import time
+
 import gspread
 from toggl.TogglPy import Toggl
 import datetime
@@ -69,6 +71,8 @@ def print_detailed_report(workspace_id, sheet_id):
     spreadsheet = gc.open_by_key(sheet_id)
     sheet = spreadsheet.sheet1
 
+    assist_list = sheet.col_values(1)[4:]
+
     while start_date <= current_date:
         end_date = start_date + datetime.timedelta(days=6)
         data = {
@@ -80,53 +84,56 @@ def print_detailed_report(workspace_id, sheet_id):
 
         report = toggl.getDetailedReport(data)
 
-        total_grand = report['total_grand']
         report_data = report['data']
 
-        # print(report_data)
-        # print("Week:", start_date.strftime("%Y-%m-%d"), end_date.strftime("%Y-%m-%d"))
-        # print("Total Grand: {}".format(total_grand))
-        # print("")
+        while True:
+            try:
+                cell_date = sheet.cell(3, count + 5).value
+                break
+            except Exception as e:
+                print("An error occurred while retrieving the cell_date:", e)
+                print("Retrying after 15 seconds...")
+                time.sleep(15)
 
-        # print("Project: {}".format(entry['project']))
-        # print("Client: {}".format(entry['client']))
-        # print("Description: {}".format(entry['description']))
-        # print("Duration: {} milliseconds".format(entry['dur']))
-        # print()
-
-        assist_list = sheet.col_values(1)[4:]
-        cell_date = sheet.cell(3, count + 5).value
+        # time.sleep(5)
 
         for entry in report_data:
             project_name = entry['project']
             duration = entry['dur']
 
             for i, cell_value in enumerate(assist_list):
-                if cell_value == "Maxim Kiselev" and start_date.strftime("%d.%m.%y") == cell_date:
-                    # and str(start_date.strftime("%d.%m.%y")) == str(sheet.cell(3, count + 5)):
-                    print("Duration: {} hours".format(convert_millisec_to_hours(duration)))
-                else:
-                    break
 
-                if cell_value == project_name:
-                    cell = sheet.cell(i + 5, count + 5)
-                    if cell.value is None:
-                        if duration == 0:
-                            continue
-                        current_value = 0
-                    else:
-                        current_value = float(cell.value.replace(',', '.'))
+                if cell_value == project_name and start_date.strftime("%d.%m.%y") == cell_date:
+                    cell_row = i + 5
+                    cell_column = count + 5
 
-                    hour_duration = convert_millisec_to_hours(duration)
-                    if current_value:
-                        current_value += hour_duration
-                    else:
-                        current_value = hour_duration
+                    while True:
+                        try:
+                            cell = sheet.cell(cell_row, cell_column)
+                            if cell.value is None:
+                                if duration == 0:
+                                    break
+                                current_value = 0
+                            else:
+                                current_value = float(cell.value.replace(',', '.'))
 
-                    cell.value = str(current_value)
-                    sheet.update_cell(i + 5, count + 5, current_value)
-                    #print(i + 5, count + 5, hour_duration, start_date.strftime("%Y-%m-%d"))
-                    #print()
+                            hour_duration = convert_millisec_to_hours(duration)
+                            if current_value:
+                                current_value += hour_duration
+                            else:
+                                current_value = hour_duration
+
+                            cell.value = str(current_value)
+                            sheet.update_cell(cell_row, cell_column, str(current_value))
+
+                            break
+                        except gspread.exceptions.APIError as e:
+                            if e.response.status_code == 429:
+                                print("Rate limit exceeded. Retrying after 15 seconds...")
+                                time.sleep(15)
+                            else:
+                                print("An error occurred while updating the cell:", e)
+                                break
 
         start_date += datetime.timedelta(weeks=1)
         count += 1
