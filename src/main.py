@@ -1,6 +1,7 @@
 import time
 import gspread
 import credentials
+import utils
 from toggl.TogglPy import Toggl
 import datetime
 
@@ -25,14 +26,6 @@ def get_project_info(api_key, workspace_id, project_name, toggl):
             break
     else:
         print(f"Проект с названием '{project_name}' не найден")
-
-
-def convert_millisec_to_hours(milliseconds):
-    seconds = milliseconds / 1000
-    minutes = seconds / 60
-    hours = minutes / 60
-    rounded_hours = int(hours * 1000) / 1000
-    return rounded_hours
 
 
 def print_detailed_report(workspace_id, sheet_id):
@@ -96,7 +89,7 @@ def print_detailed_report(workspace_id, sheet_id):
                             else:
                                 current_value = float(cell.value.replace(',', '.'))
 
-                            hour_duration = convert_millisec_to_hours(duration)
+                            hour_duration = utils.convert_millisec_to_hours(duration)
                             if current_value:
                                 current_value += hour_duration
                             else:
@@ -146,16 +139,6 @@ def write_assists_gsheet(toggl, workspace_id, sheet_id):
     for project_name in new_projects:
         sheet.update_cell(start_row, 1, project_name)
         start_row += 1
-
-
-def get_previous_week_dates():
-    today = datetime.date.today()
-    current_weekday = today.weekday()
-    start_of_week = today - datetime.timedelta(days=current_weekday + 7)
-    start_date = start_of_week.strftime("%Y-%m-%d")
-    end_of_week = today - datetime.timedelta(days=current_weekday + 1)
-    end_date = end_of_week.strftime("%Y-%m-%d")
-    return start_date, end_date
 
 
 def main():
