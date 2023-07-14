@@ -1,4 +1,7 @@
 import datetime
+import os
+
+import gspread
 
 
 def convert_millisec_to_hours(milliseconds):
@@ -26,3 +29,16 @@ def get_range_data(workspace_id, start_date, end_date):
         'since': start_date.strftime("%Y-%m-%d"),
         'until': end_date.strftime("%Y-%m-%d"),
     }
+
+
+def read_service_account():
+    credentials_file = os.path.abspath("../credentials/service_account.json")
+    return gspread.service_account(filename=credentials_file)
+
+
+def get_assist_list(sheet):
+    return sheet.col_values(1)[4:]
+
+
+def adjust_count(start_date, end_date):
+    return (end_date - start_date).days // 7

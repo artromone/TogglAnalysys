@@ -1,3 +1,8 @@
+import datetime
+
+import utils
+
+
 def write_assists_gsheet(toggl, workspace_id, sheet_id):
     start_date = datetime.date(2023, 12, 27)
     yesterday_date = start_date + datetime.timedelta(days=20)
@@ -10,7 +15,7 @@ def write_assists_gsheet(toggl, workspace_id, sheet_id):
         print("Error: 'total_grand' key is missing in the credentials dictionary.")
         return
 
-    gc = gspread.service_account(filename="../credentials/service_account.json")
+    gc = utils.read_service_account()
     sheet = gc.open_by_key(sheet_id).sheet1
 
     existing_projects = sheet.col_values(1)[4:]
@@ -22,4 +27,3 @@ def write_assists_gsheet(toggl, workspace_id, sheet_id):
     for project_name in new_projects:
         sheet.update_cell(start_row, 1, project_name)
         start_row += 1
-
