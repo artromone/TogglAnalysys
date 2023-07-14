@@ -48,16 +48,27 @@ def get_project_info(api_key, workspace_id, project_name, toggl):
         print(f"Проект с названием '{project_name}' не найден")
 
 
+def convert_millisec_to_hours(milliseconds):
+    seconds = milliseconds / 1000
+    minutes = seconds / 60
+    hours = minutes / 60
+    rounded_hours = int(hours * 1000) / 1000
+    return rounded_hours
+
+
 def print_detailed_report(workspace_id, sheet_id):
     toggl = Toggl()
 
     start_date = datetime.date(2021, 12, 27)
+    count = 0
+    start_date = datetime.date(2022, 12, 26)
+    count = 48
     current_date = datetime.date.today()
 
     gc = gspread.service_account(filename="service_account.json")
-    sheet = gc.open_by_key(sheet_id).sheet1
+    spreadsheet = gc.open_by_key(sheet_id)
+    sheet = spreadsheet.sheet1
 
-    count = 0
     while start_date <= current_date:
         end_date = start_date + datetime.timedelta(days=6)
         data = {
@@ -83,16 +94,39 @@ def print_detailed_report(workspace_id, sheet_id):
         # print("Duration: {} milliseconds".format(entry['dur']))
         # print()
 
+        assist_list = sheet.col_values(1)[4:]
+        cell_date = sheet.cell(3, count + 5).value
+
         for entry in report_data:
             project_name = entry['project']
             duration = entry['dur']
 
-            row_values = sheet.col_values(1)[4:]
+            for i, cell_value in enumerate(assist_list):
+                if cell_value == "Maxim Kiselev" and start_date.strftime("%d.%m.%y") == cell_date:
+                    # and str(start_date.strftime("%d.%m.%y")) == str(sheet.cell(3, count + 5)):
+                    print("Duration: {} hours".format(convert_millisec_to_hours(duration)))
+                else:
+                    break
 
-            for i, cell_value in enumerate(row_values):
                 if cell_value == project_name:
-                    sheet.update_cell(i + 5, count + 5, duration)
-                    print(i + 5, count + 5, duration)
+                    cell = sheet.cell(i + 5, count + 5)
+                    if cell.value is None:
+                        if duration == 0:
+                            continue
+                        current_value = 0
+                    else:
+                        current_value = float(cell.value.replace(',', '.'))
+
+                    hour_duration = convert_millisec_to_hours(duration)
+                    if current_value:
+                        current_value += hour_duration
+                    else:
+                        current_value = hour_duration
+
+                    cell.value = str(current_value)
+                    sheet.update_cell(i + 5, count + 5, current_value)
+                    #print(i + 5, count + 5, hour_duration, start_date.strftime("%Y-%m-%d"))
+                    #print()
 
         start_date += datetime.timedelta(weeks=1)
         count += 1
