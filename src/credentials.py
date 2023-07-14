@@ -1,9 +1,11 @@
+import os
 import configparser
 
 
 def read_credentials():
     config = configparser.ConfigParser()
-    config.read("../data/credentials.txt")
+    credentials_file = os.path.abspath("../credentials/credentials.txt")
+    config.read(credentials_file)
 
     api_key = "api_key"
     workspace_id = "workspace_id"

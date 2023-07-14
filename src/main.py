@@ -2,30 +2,9 @@ import time
 import gspread
 import credentials
 import utils
+import project
 from toggl.TogglPy import Toggl
 import datetime
-
-
-def get_project_info(api_key, workspace_id, project_name, toggl):
-    params = {
-        "actual_hours": "true"
-    }
-
-    response = toggl.request(f"https://api.track.toggl.com/api/v8/workspaces/{workspace_id}/projects",
-                             parameters=params)
-
-    for project in response:
-        if project_name == project['name']:
-            actual_hours = project.get('actual_hours')
-            print(f"Название проекта: {project_name}")
-            if actual_hours is not None:
-                print(f"Фактически отработанные часы: {actual_hours}")
-            else:
-                print("Фактически отработанных часов не указано")
-            print()
-            break
-    else:
-        print(f"Проект с названием '{project_name}' не найден")
 
 
 def print_detailed_report(workspace_id, sheet_id):
@@ -56,7 +35,7 @@ def print_detailed_report(workspace_id, sheet_id):
 
         report = toggl.getDetailedReport(data)
 
-        report_data = report['data']
+        report_data = report['credentials']
 
         while True:
             try:
@@ -112,37 +91,9 @@ def print_detailed_report(workspace_id, sheet_id):
         count += 1
 
 
-def write_assists_gsheet(toggl, workspace_id, sheet_id):
-    start_date = datetime.date(2021, 12, 27)
-    yesterday_date = start_date + datetime.timedelta(days=1)
-    data_ = {
-        'user_agent': 'TogglPy',
-        'workspace_id': workspace_id,
-        'since': start_date.strftime("%Y-%m-%d"),
-        'until': yesterday_date.strftime("%Y-%m-%d"),
-    }
-    data = toggl.getDetailedReport(data_)
-
-    if 'total_grand' not in data:
-        print("Error: 'total_grand' key is missing in the data dictionary.")
-        return
-
-    gc = gspread.service_account(filename="service_account.json")
-    sheet = gc.open_by_key(sheet_id).sheet1
-
-    existing_projects = sheet.col_values(1)[4:]
-
-    new_projects = list(set([entry['project'] for entry in data['data']]) - set(existing_projects))
-
-    start_row = len(existing_projects) + 5
-
-    for project_name in new_projects:
-        sheet.update_cell(start_row, 1, project_name)
-        start_row += 1
-
-
 def main():
-    api_key, workspace_id, project_name, sheet_id = credentials.read_credentials()
+    read_credentials = credentials.read_credentials()
+    api_key, workspace_id, project_name, sheet_id = read_credentials
     toggl = Toggl()
     toggl.setAPIKey(api_key)
 

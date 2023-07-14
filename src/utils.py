@@ -17,3 +17,12 @@ def get_previous_week_dates():
     end_of_week = today - datetime.timedelta(days=current_weekday + 1)
     end_date = end_of_week.strftime("%Y-%m-%d")
     return start_date, end_date
+
+
+def get_range_data(workspace_id, start_date, end_date):
+    return {
+        'user_agent': 'TogglPy',
+        'workspace_id': workspace_id,
+        'since': start_date.strftime("%Y-%m-%d"),
+        'until': end_date.strftime("%Y-%m-%d"),
+    }
