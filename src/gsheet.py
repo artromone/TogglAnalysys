@@ -1,7 +1,6 @@
 import datetime
 import time
 import gspread
-
 # from log import logging as log
 import utils
 
@@ -11,7 +10,7 @@ def open_sheet_by_key(sheet_id, retry_rate):
         try:
             gc = utils.read_service_account()
             return gc.open_by_key(sheet_id).sheet1
-        except gspread.exceptions.APIError as e:
+        except Exception as e:
             # log.warning("An error occurred while opening the sheet:", e)
             # log.warning("Retrying after " + str(retry_rate) + " seconds...")
             time.sleep(retry_rate)
