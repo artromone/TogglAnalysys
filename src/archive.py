@@ -13,8 +13,6 @@ def write_assists_gsheet(toggl, workspace_id, sheet_id):
     data = utils.get_range_data(workspace_id, start_date, yesterday_date)
     report_data = toggl.getDetailedReport(data)
 
-    print(report_data)
-
     if 'total_grand' not in report_data:
         print("Error: 'total_grand' key is missing in the credentials dictionary.")
         return
