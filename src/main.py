@@ -1,6 +1,9 @@
 from toggl.TogglPy import Toggl
 import credentials
-import gsheet
+from src.project import *
+
+
+#import gsheet
 
 
 def main():
@@ -15,7 +18,10 @@ def main():
     toggl = Toggl()
     toggl.setAPIKey(api_key)
 
-    gsheet.fill_weeks_durations(toggl, workspace_id, sheet_id)
+    pr = get_project_by_name(toggl, read_credentials, "1")
+    print_project_actual_hours(pr)
+
+    #gsheet.fill_weeks_durations(toggl, workspace_id, sheet_id)
 
 
 if __name__ == "__main__":
