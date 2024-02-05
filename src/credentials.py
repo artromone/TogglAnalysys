@@ -4,19 +4,20 @@ import configparser
 
 def read_credentials():
     config = configparser.ConfigParser()
-    credentials_file = os.path.abspath("../credentials/credentials.txt")
-    config.read(credentials_file)
+    credentials_file_path = os.path.abspath("../credentials/credentials.txt")
 
-    api_key = "api_key"
-    workspace_id = "workspace_id"
-    project_name = "project_name"
-    sheet_id = "sheet_id"
+    if not os.path.exists(credentials_file_path):
+        raise FileNotFoundError(f"Credentials file not found at: {credentials_file_path}")
 
-    credentials = {
-        api_key: config.get("credentials", api_key),
-        workspace_id: config.get("credentials", workspace_id),
-        project_name: config.get("credentials", project_name),
-        sheet_id: config.get("credentials", sheet_id),
-    }
+    config.read(credentials_file_path)
+
+    required_keys = ["api_key", "workspace_id", "project_name", "sheet_id"]
+    credentials = {}
+
+    for key in required_keys:
+        try:
+            credentials[key] = config.get("credentials", key)
+        except configparser.NoOptionError:
+            raise ValueError(f"Missing {key} in the credentials file")
 
     return tuple(credentials.values())

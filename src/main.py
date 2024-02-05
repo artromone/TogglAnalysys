@@ -1,28 +1,30 @@
 from toggl.TogglPy import Toggl
-import credentials
-from src.project import *
 
-
-#import gsheet
+from src import credentials
+from src.log import setup_logger
 
 
 def main():
 
     try:
-        read_credentials = credentials.read_credentials()
+
+        api_key, workspace_id, project_name, sheet_id = credentials.read_credentials()
+        toggl = Toggl()
+        toggl.setAPIKey(api_key)
+
+        logger.debug(f"API Key: {api_key}")
+        logger.debug(f"Workspace ID: {workspace_id}")
+        logger.debug(f"Project Name: {project_name}")
+
     except Exception as e:
-        print("No credentials found: " + str(e))
-        return
 
-    api_key, workspace_id, project_name, sheet_id = read_credentials
-    toggl = Toggl()
-    toggl.setAPIKey(api_key)
-
-    pr = get_project_by_name(toggl, read_credentials, "1")
-    print_project_actual_hours(pr)
-
-    #gsheet.fill_weeks_durations(toggl, workspace_id, sheet_id)
+        logger.error(f"An error occurred: {e}")
 
 
 if __name__ == "__main__":
+
+    logger = setup_logger()
+    logger.debug("LOG STARTED")
+    logger.debug("")
+
     main()
