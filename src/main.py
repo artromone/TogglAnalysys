@@ -4,7 +4,13 @@ import gsheet
 
 
 def main():
-    read_credentials = credentials.read_credentials()
+
+    try:
+        read_credentials = credentials.read_credentials()
+    except Exception as e:
+        print("No credentials found: " + str(e))
+        return
+
     api_key, workspace_id, project_name, sheet_id = read_credentials
     toggl = Toggl()
     toggl.setAPIKey(api_key)
