@@ -1,14 +1,11 @@
 from toggl.TogglPy import Toggl
-
 from src import credentials
-from src.api import *
 from src.files import *
 
 
-def main():
-
+def done_user_work(filename):
     try:
-        api_key, workspace_id, file_name = credentials.read_credentials()
+        api_key, workspace_id, file_name = credentials.read_credentials(filename)
     except Exception as e:
         print(f"An error occurred: {e}")
         return
@@ -16,16 +13,14 @@ def main():
     toggl = Toggl()
     toggl.setAPIKey(api_key)
 
-    print(f"API Key: {api_key}")
-    print(f"Workspace ID: {workspace_id}")
-    print(f"Assistant: {file_name}")
-    print()
-
-    workspace = select_workspace_by_id(get_user_workspaces(toggl), workspace_id)
-
     since_date = "2024-02-01"
 
     generate_report(toggl, workspace_id, since_date, file_name)
+
+
+def main():
+    for filename in os.listdir("../credentials"):
+        done_user_work(filename)
 
 
 if __name__ == "__main__":

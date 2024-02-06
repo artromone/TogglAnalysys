@@ -2,9 +2,9 @@ import os
 import configparser
 
 
-def read_credentials():
+def read_credentials(file_name):
     config = configparser.ConfigParser()
-    credentials_file_path = os.path.abspath("../credentials/credentials.txt")
+    credentials_file_path = os.path.abspath("../credentials/" + file_name)
 
     if not os.path.exists(credentials_file_path):
         raise FileNotFoundError(f"Credentials file not found at: {credentials_file_path}")
