@@ -13,9 +13,7 @@ def done_user_work(filename):
     toggl = Toggl()
     toggl.setAPIKey(api_key)
 
-    since_date = "2024-02-01"
-
-    generate_report(toggl, workspace_id, since_date, file_name)
+    generate_report(toggl, workspace_id, file_name)
 
 
 def main():

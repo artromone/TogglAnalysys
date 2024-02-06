@@ -3,13 +3,22 @@ from datetime import datetime, timedelta
 import fitz
 
 
-def generate_report(toggl_instance, workspace_id, since_date_str, file_name):
+def get_first_day_of_week():
+    today = datetime.today()
+    first_day = today - timedelta(weeks=1) - timedelta(days=today.weekday())
+    return first_day
+
+
+def generate_report(toggl_instance, workspace_id, file_name):
     export_dir = "../export"
     if not os.path.exists(export_dir):
         os.makedirs(export_dir)
 
+    since_date = get_first_day_of_week()
+    since_date_str = since_date.strftime('%Y-%m-%d')
+
     until_date = datetime.strptime(since_date_str, '%Y-%m-%d')
-    until_date += timedelta(weeks=1)
+    until_date += timedelta(weeks=1) - timedelta(days=1)
     until_date_str = until_date.strftime('%Y-%m-%d')
 
     data = {
@@ -25,8 +34,8 @@ def generate_report(toggl_instance, workspace_id, since_date_str, file_name):
     pdf_path_temp = os.path.join(export_dir, f"_{file_name}")
     pdf_path_final = os.path.join(export_dir, file_name)
 
-    #toggl_instance.getWeeklyReportPDF(data, pdf_path_temp)
-    #toggl_instance.getSummaryReportPDF(data, pdf_path_temp)
+    # toggl_instance.getWeeklyReportPDF(data, pdf_path_temp)
+    # toggl_instance.getSummaryReportPDF(data, pdf_path_temp)
     toggl_instance.getDetailedReportPDF(data, pdf_path_temp)
 
     doc = fitz.open(pdf_path_temp)
