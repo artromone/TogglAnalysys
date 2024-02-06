@@ -1,6 +1,6 @@
 import os
 from datetime import datetime, timedelta
-import fitz
+#import fitz
 
 
 def generate_report(toggl_instance, workspace_id, file_name, since_date):
@@ -25,14 +25,14 @@ def generate_report(toggl_instance, workspace_id, file_name, since_date):
     until_date_formatted = datetime.strptime(data['until'], '%Y-%m-%d').strftime('%d.%m.%y')
     file_name = f"{since_date_formatted}_{until_date_formatted}_{file_name}.pdf"
 
-    pdf_path_temp = os.path.join(export_dir, f"_{file_name}")
+    # pdf_path_temp = os.path.join(export_dir, f"_{file_name}")
     pdf_path_final = os.path.join(export_dir, file_name)
 
     # toggl_instance.getWeeklyReportPDF(data, pdf_path_temp)
     # toggl_instance.getSummaryReportPDF(data, pdf_path_temp)
-    toggl_instance.getDetailedReportPDF(data, pdf_path_temp)
+    toggl_instance.getDetailedReportPDF(data, pdf_path_final)
 
-    doc = fitz.open(pdf_path_temp)
-    doc.save(pdf_path_final, garbage=4, deflate=True)
-    doc.close()
-    os.remove(pdf_path_temp)
+    # doc = fitz.open(pdf_path_temp)
+    # doc.save(pdf_path_final, garbage=4, deflate=True)
+    # doc.close()
+    # os.remove(pdf_path_temp)

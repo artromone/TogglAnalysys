@@ -1,10 +1,10 @@
 from toggl.TogglPy import Toggl
-from src import credentials
-from src.files import *
-
+from credentials import read_credentials
+from files import generate_report
+import os
 
 def generate_user_report(filename, since_date):
-    api_key, workspace_id, file_name = credentials.read_credentials(filename)
+    api_key, workspace_id, file_name = read_credentials(filename)
 
     toggl = Toggl()
     toggl.setAPIKey(api_key)
@@ -16,12 +16,12 @@ def generate_all_reports(since_date):
 
     directory = 'credentials'
 
-    if os.path.exists(directory):
-        files = os.listdir(directory)
+    if not os.path.exists(directory):
+        os.makedirs(directory)
 
-        for filename in files:
-            generate_user_report(filename, since_date)
-    else:
-        raise Exception("Директории не существует")
+    files = os.listdir(directory)
+
+    for filename in files:
+        generate_user_report(filename, since_date)
 
 
