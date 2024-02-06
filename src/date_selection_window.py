@@ -24,4 +24,5 @@ class DateSelectionWindow(QWidget):
         selected_date = self.calendar.selectedDate()
         next_week_date = selected_date.addDays(7)
         self.main_window.showSelectedDate(selected_date, next_week_date)
+        self.main_window.updateSelectedDate(selected_date)
         self.close()

@@ -2,15 +2,26 @@ from PyQt5.QtWidgets import QWidget, QVBoxLayout, QPushButton, QLabel, QMessageB
 from PyQt5.QtCore import Qt
 
 import os
+from datetime import datetime, timedelta
 
 from date_selection_window import DateSelectionWindow
 from reports import generate_all_reports
+
+
+def get_first_day_of_week():
+    today = datetime.today()
+    first_day = today - timedelta(weeks=1) - timedelta(days=today.weekday())
+    return first_day
 
 
 class MainWindow(QWidget):
     def __init__(self):
         super().__init__()
         self.initUI()
+        self.selected_date = get_first_day_of_week()
+
+    def updateSelectedDate(self, new_date):
+        self.selected_date = new_date
 
     def initUI(self):
         layout = QVBoxLayout()
@@ -37,13 +48,14 @@ class MainWindow(QWidget):
 
     def showSelectedDate(self, selected_date, next_week_date):
         self.date_label.setText('Начало диапазона: ' + selected_date.toString(Qt.DefaultLocaleLongDate))
-        self.date_label.setText(self.date_label.text() + '\nКонец диапазона: ' + next_week_date.toString(Qt.DefaultLocaleLongDate))
+        self.date_label.setText(
+            self.date_label.text() + '\nКонец диапазона: ' + next_week_date.toString(Qt.DefaultLocaleLongDate))
 
         self.export_button.setEnabled(True if selected_date.isValid() else False)
 
     def exportToFile(self):
         try:
-            generate_all_reports()
+            generate_all_reports(self.selected_date)
             export_dir = os.path.dirname(os.path.dirname(__file__)) + "/export"
             QMessageBox.information(self, 'Экспорт завершен', f'Данные успешно экспортированы в {export_dir}')
         except Exception as e:
