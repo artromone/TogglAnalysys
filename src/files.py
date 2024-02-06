@@ -10,7 +10,7 @@ def get_first_day_of_week():
 
 
 def generate_report(toggl_instance, workspace_id, file_name):
-    export_dir = "../export"
+    export_dir = "export"
     if not os.path.exists(export_dir):
         os.makedirs(export_dir)
 
