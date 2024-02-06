@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import QWidget, QVBoxLayout, QPushButton, QLabel, QMessageBox
+from PyQt5.QtWidgets import QWidget, QVBoxLayout, QPushButton, QLabel, QMessageBox, QProgressBar
 from PyQt5.QtCore import Qt
 
 import os
@@ -38,6 +38,10 @@ class MainWindow(QWidget):
         self.export_button.setEnabled(False)
         layout.addWidget(self.export_button)
 
+        self.progress_bar = QProgressBar()
+        self.progress_bar.setVisible(False)
+        layout.addWidget(self.progress_bar)
+
         self.setLayout(layout)
         self.setWindowTitle('FavorIT Assistants | t.me/art_rom')
         self.setMinimumWidth(400)
@@ -54,9 +58,18 @@ class MainWindow(QWidget):
         self.export_button.setEnabled(True if selected_date.isValid() else False)
 
     def exportToFile(self):
+        #self.export_button.setVisible(False)
+        #self.progress_bar.setVisible(True)
+
         try:
             generate_all_reports(self.selected_date)
+
             export_dir = os.path.dirname(os.path.dirname(__file__)) + "/export"
             QMessageBox.information(self, 'Экспорт завершен', f'Данные успешно экспортированы в {export_dir}')
+
         except Exception as e:
             QMessageBox.critical(self, 'Ошибка', f'Не удалось экспортировать данные: {str(e)}')
+
+        # finally:
+        #     self.export_button.setVisible(True)
+        #     self.progress_bar.setVisible(False)
