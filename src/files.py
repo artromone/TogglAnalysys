@@ -12,7 +12,7 @@ def generate_report(toggl_instance, workspace_id, file_name, since_date):
     since_date_str = since_date.toPyDate().strftime('%Y-%m-%d')
 
     until_date = datetime.strptime(since_date_str, '%Y-%m-%d')
-    until_date += timedelta(weeks=1)
+    until_date += timedelta(weeks=1) - timedelta(days=1)
     until_date_str = until_date.strftime('%Y-%m-%d')
 
     data = {

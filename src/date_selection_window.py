@@ -22,7 +22,7 @@ class DateSelectionWindow(QWidget):
 
     def onSelectDate(self):
         selected_date = self.calendar.selectedDate()
-        next_week_date = selected_date.addDays(7)
+        next_week_date = selected_date.addDays(6)
         self.main_window.showSelectedDate(selected_date, next_week_date)
         self.main_window.updateSelectedDate(selected_date)
         self.close()
