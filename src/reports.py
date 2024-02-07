@@ -21,6 +21,9 @@ def generate_all_reports(since_date):
 
     files = os.listdir(directory)
 
+    if len(files) == 0:
+        raise FileNotFoundError(f"Файлы для аутентификации не найдены в директории: {os.path.abspath(directory)}")
+
     for filename in files:
         generate_user_report(filename, since_date)
 

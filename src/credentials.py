@@ -7,7 +7,7 @@ def read_credentials(file_name):
     credentials_file_path = os.path.abspath("credentials/" + file_name)
 
     if not os.path.exists(credentials_file_path):
-        raise FileNotFoundError(f"Credentials file not found at: {credentials_file_path}")
+        raise FileNotFoundError(f"Файл аутентификации не найдены в директории: {credentials_file_path}")
 
     config.read(credentials_file_path)
 
@@ -18,6 +18,6 @@ def read_credentials(file_name):
         try:
             credentials[key] = config.get("credentials", key)
         except configparser.NoOptionError:
-            raise ValueError(f"Missing {key} in the credentials file")
+            raise ValueError(f"Отсутствует {key} в файлах для аутентификации")
 
     return tuple(credentials.values())
