@@ -1,6 +1,8 @@
 import os
 from datetime import datetime, timedelta
-#import fitz
+
+
+# import fitz
 
 def generate_report(toggl_instance, workspace_id, rph, file_name, since_date):
     export_dir = "export"
@@ -29,7 +31,7 @@ def generate_report(toggl_instance, workspace_id, rph, file_name, since_date):
 
     # toggl_instance.getWeeklyReportPDF(data, pdf_path_temp)
     # toggl_instance.getSummaryReportPDF(data, pdf_path_temp)
-    toggl_instance.getDetailedReportPDF(data, pdf_path_final)
+    #    toggl_instance.getDetailedReportPDF(data, pdf_path_final)
 
     data = toggl_instance.getDetailedReport(data)
 
@@ -49,9 +51,32 @@ def generate_report(toggl_instance, workspace_id, rph, file_name, since_date):
             unspecified_client_time += duration
 
     print("Суммарное время работы для каждого клиента:")
+
+    first_read = True
     for client, time in client_work_time.items():
+        client_file_name = "export/" + client + ".txt"
+
         time /= 3600_000
-        print(f"{client}: {time} s, {int(rph) * time:.2f} rubles")
+        line = client + " : " + str(time) + " s " + str(int(rph) * time) + " rubles.\n"
+
+        try:
+            with open(client_file_name, 'x') as f:
+                f.write(line)
+
+        except FileExistsError:
+
+            try:
+                with open(client_file_name, 'a') as f:
+                    print(first_read)
+                    if first_read:
+                        f.truncate(0)
+                        first_read = False
+                    f.write(line)
+            except Exception as e:
+                print("Произошла ошибка:", e)
+
+        except Exception as e:
+            print("Произошла ошибка:", e)
 
     print("\nВремя работы для задач без указанного клиента:", unspecified_client_time, "ms")
 
