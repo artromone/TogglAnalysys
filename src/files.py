@@ -2,8 +2,7 @@ import os
 from datetime import datetime, timedelta
 #import fitz
 
-
-def generate_report(toggl_instance, workspace_id, file_name, since_date):
+def generate_report(toggl_instance, workspace_id, rph, file_name, since_date):
     export_dir = "export"
     if not os.path.exists(export_dir):
         os.makedirs(export_dir)
@@ -31,6 +30,30 @@ def generate_report(toggl_instance, workspace_id, file_name, since_date):
     # toggl_instance.getWeeklyReportPDF(data, pdf_path_temp)
     # toggl_instance.getSummaryReportPDF(data, pdf_path_temp)
     toggl_instance.getDetailedReportPDF(data, pdf_path_final)
+
+    data = toggl_instance.getDetailedReport(data)
+
+    client_work_time = {}
+    unspecified_client_time = 0
+
+    for task in data['data']:
+        client = task.get('client')
+        duration = task['dur']
+
+        if client:
+            if client in client_work_time:
+                client_work_time[client] += duration
+            else:
+                client_work_time[client] = duration
+        else:
+            unspecified_client_time += duration
+
+    print("Суммарное время работы для каждого клиента:")
+    for client, time in client_work_time.items():
+        time /= 3600_000
+        print(f"{client}: {time} s, {int(rph) * time:.2f} rubles")
+
+    print("\nВремя работы для задач без указанного клиента:", unspecified_client_time, "ms")
 
     # doc = fitz.open(pdf_path_temp)
     # doc.save(pdf_path_final, garbage=4, deflate=True)

@@ -61,14 +61,14 @@ class MainWindow(QWidget):
         #self.export_button.setVisible(False)
         #self.progress_bar.setVisible(True)
 
-        try:
+        #try:
             generate_all_reports(self.selected_date)
 
             export_dir = os.path.dirname(os.path.dirname(__file__)) + "/export"
-            QMessageBox.information(self, 'Экспорт завершен', f'Данные успешно экспортированы в {export_dir}')
+            #QMessageBox.information(self, 'Экспорт завершен', f'Данные успешно экспортированы в {export_dir}')
 
-        except Exception as e:
-            QMessageBox.critical(self, 'Ошибка', f'Не удалось экспортировать данные: {str(e)}')
+        # except Exception as e:
+        #     QMessageBox.critical(self, 'Ошибка', f'Не удалось экспортировать данные: {str(e)}')
 
         # finally:
         #     self.export_button.setVisible(True)

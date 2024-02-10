@@ -11,7 +11,7 @@ def read_credentials(file_name):
 
     config.read(credentials_file_path)
 
-    required_keys = ["api_key", "workspace_id", "file_name"]
+    required_keys = ["api_key", "workspace_id", "file_name", "rph"]
     credentials = {}
 
     for key in required_keys:
